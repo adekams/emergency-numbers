@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+    <title>API (Numbers)</title>
+
+    <style>
+        :root {
+            --primary-color:#3b4368;
+            --secondary-color:  #689cc5 ;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            min-height: 100vh;
+            background: url('Spinner-1s-200px.svg') no-repeat fixed center;
+            background-size: contain;
+            max-width: 1150px;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .title {
+            font-size: 1.5em;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+        .form-input {
+            text-align: center;
+            padding: 20px;
+        }
+        .form-input > input{
+            padding: 10px 30px;
+            border: 1px solid var(--primary-color);
+            border-radius: 3px;
+            text-transform: lowercase;
+        }
+        .form-input > input:focus, .card:focus {
+            outline: none;
+        }
+        .card {
+            border: none;
+            margin: 15px auto;
+            box-shadow: 0 0 12px;
+            padding: 20px 10px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            border-radius: 5px;
+            font-weight: 700;
+            width: 300px;
+            align-items: center;
+            color: var(--primary-color);
+        }
+
+        .card:hover{
+            transition: .3s all ease-in-out;
+            background:linear-gradient(120deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: #f4f4fe;
+            box-shadow: none;
+        }
+
+        .contact {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 20px 30px;
+
+        }
+
+        #phone {
+            margin-left: 15px;
+            color: var(--primary-color);
+        }
+
+        #phone:hover {
+            cursor: pointer;
+            color: #f4f4fe;
+            transition: .3s all ease-in-out;
+        }
+
+        .error {
+            display: none;
+            font-size: 1.3em;
+            margin: 0 auto;
+            
+        }
+        .show{
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <h1 class="title">EMERGENCY NUMBERS</h1>
+
+        <section class="form-input">
+            <input type='text' id="search" placeholder="type to search..">
+        </section>
+        
+        <section class="contact">
+
+        </section>
+       
+    </div>
+
+    <script>
+        const error = document.querySelector('.error')
+        const container = document.querySelector('.container')
+        const contact = document.querySelector('.contact')
+        const search = document.querySelector('#search') 
+        let contactList = []
+
+        search.addEventListener('keyup', (e) => {
+            //get input value
+            searchContent = e.target.value.toLowerCase();
+            console.log(searchContent)
+
+            //return names that matches search content
+            const filtered = contactList.filter(detail => {
+                return (
+                    detail.name.toLowerCase().includes(searchContent)
+                )
+            })
+            displayContacts(filtered)
+        })
+        
+        const loadContacts = async () => {
+            try {
+                const res = await fetch('https://emajency.com/js/numbers.json')
+                
+                contactList = await res.json()
+                displayContacts(contactList)
+            }
+            catch (err) {
+                console.log(err)
+                container.style.background = 'none'
+                alert(err)
+            }
+        }
+
+        const displayContacts = (details) => {
+            const contacts = details.map(detail => {
+                return `
+                    <div class="card">
+                        <div class="name">${detail.name}</div>
+                        <div class="number">
+                            <a href="tel:${detail.number}" id='phone'><i class="fas fa-phone fa-2x"></i></a>
+                        </div>
+                    </div>
+                `
+            })
+            contact.innerHTML = contacts.join('')
+            container.style.background = 'none'
+            
+
+        }
+        
+        loadContacts()
+    </script>
+</body>
+</html>
